@@ -1,2 +1,4 @@
-# nest
-nëst • Löve Potion Compatabiility Layer
+# nëst
+nëst is a compatability layer library for [Löve Potion](https://github.com/TurtleP/LovePotion) to use in the [LÖVE framework](https://love2d.org). The main issue that people have when creating games in LÖVE is that they want to also make it work on Löve Potion. It usually works, but the main issue is either missing features (e.g. 3DS lack of SpriteBatches) or minor differences, like `gamepad` constants.
+
+Currently nëst supports Löve Potion version 2.0.0 which is currently a work-in-progress. Please note that if something goes wrong while testing on hardware, it is likely something in your own code, depending on the situation. I also cannot add functionality that does not exist to this library that is not in Löve Potion, but I can add it if it's feasible to the framework, and therefore, add it here.
