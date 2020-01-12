@@ -1,14 +1,10 @@
---[[
----- @module nest
---]]
-
 local PATH = (...):gsub('%.init$', '')
 
 local nest =
 {
     _VERSION     = "0.1.0",
     _DESCRIPTION = "Löve Potion Compatabiility Layer library",
-    _LICENCE     =
+    _LICENSE     =
     [[
         MIT LICENSE
 
@@ -35,11 +31,8 @@ local nest =
     ]]
 }
 
---[[
----- @func init
----- load the @device to use
----- [ctr for 3DS, nx for Switch]
---]]
+--- Load the device to use.
+--- @param device {string}: ctr for 3DS, nx for Switch
 nest.init = function(device)
     -- make sure we're not already
     -- running under homebrew!
@@ -48,7 +41,7 @@ nest.init = function(device)
     end
 
     assert(device ~= nil, "Bad argument #1 to init: string expected, got " .. tostring(device))
-    assert(device:match("ctr") or device:match("nx"), "Invalid device " .. device)
+    assert(device:match("ctr") or device:match("nx"), "Invalid device " .. device .. " expected 'ctr' or 'nx'")
 
     -- override the LÖVE variables
     -- don't actually do this other people
@@ -59,7 +52,9 @@ nest.init = function(device)
 
     -- format a path to the appropriate device folder
     local module_folder = string.format("%s.%s", PATH, device)
-    require(module_folder)
+    local dimensions = require(module_folder)
+
+    love.window.updateMode(unpack(dimensions))
 end
 
 return nest
