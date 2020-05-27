@@ -1,5 +1,7 @@
 local PATH = (...):gsub('%.init$', '')
 
+local hook  = require(PATH .. ".libs.hook")
+
 local nest =
 {
     _VERSION     = "0.1.0",
@@ -55,6 +57,63 @@ nest.init = function(device)
     local dimensions = require(module_folder)
 
     love.window.updateMode(unpack(dimensions))
+
+    nest._setupControls()
+
+    love.run = require(PATH .. ".run")
+end
+
+--- Sets up keybindings to be used as Gamepad callbacks
+--- WARNING: Internal function - DO NOT USE
+function nest._setupControls()
+    nest.controls = require(PATH .. ".hid")
+
+    local function format(str, ...)
+        return string.format(str, ...)
+    end
+
+    local function parseGamepadAxis(str)
+        local sep, fields = sep or ":", {}
+        local pattern = string.format("([^%s]+)", sep)
+        str:gsub(pattern, function(c) fields[#fields + 1] = c end)
+        return fields
+    end
+
+    -- these have to be defined or we can't overload them
+    function love.keypressed(key, scancode, isrepeat)
+    end
+
+    function love.keyreleased(key, scancode, isrepeat)
+    end
+
+    local joystick = love.joystick.getJoysticks()[1] or {}
+    love.keyboard.setKeyRepeat(true)
+
+    function nest._keypressed(key, scancode, isrepeat)
+        if not nest.controls[key] then
+            return
+        end
+
+        if nest.controls[key]:find(":") then
+            local info = parseGamepadAxis(nest.controls[key])
+            local which, value = unpack(info)
+
+            love.event.push("gamepadaxis", joystick, which, value)
+        else
+            if not isrepeat then
+                love.event.push("gamepadpressed", joystick, nest.controls[key])
+            end
+        end
+    end
+
+    function nest._keyreleased(key)
+        if nest.controls[key] then
+            love.event.push("gamepadreleased", joystick, nest.controls[key])
+        end
+    end
+
+    love.keypressed  = hook.add(love.keypressed, nest._keypressed)
+    love.keyreleased = hook.add(love.keyreleased, nest._keyreleased)
 end
 
 return nest

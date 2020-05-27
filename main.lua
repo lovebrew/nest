@@ -1,4 +1,5 @@
-require 'nest'.init("ctr")
+local nest = require('nest').init("ctr")
+
 menu = require 'menu'
 
 function love.load()
@@ -16,7 +17,7 @@ function love.update(dt)
 end
 
 function love.gamepadpressed(joystick, button)
-
+    menu:gamepadpressed(joystick, button)
 end
 
 function love.gamepadreleased(joystick, button)
@@ -24,5 +25,5 @@ function love.gamepadreleased(joystick, button)
 end
 
 function love.gamepadaxis(joystick, axis, value)
-
+    print(axis, value)
 end
