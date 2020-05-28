@@ -8,8 +8,15 @@ return function()
 
     local screens =
     {
-        new_display(0, 0, 400, 240),
-        new_display(40, 240, 320, 240)
+        ["3DS"] =
+        {
+            new_display(0, 0, 400, 240),
+            new_display(40, 240, 320, 240)
+        },
+        ["Switch"] =
+        {
+            new_display(0, 0, 1280, 720)
+        }
     }
 
     -- Main loop time.
@@ -34,7 +41,7 @@ return function()
         if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
 
         if love.graphics and love.graphics.isActive() then
-            for i, v in ipairs(screens) do
+            for i, v in ipairs(screens[love._console_name]) do
                 local target = v:getTarget()
 
                 target:renderTo(function()

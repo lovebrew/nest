@@ -1,6 +1,7 @@
 local PATH = (...):gsub('%.init$', '')
 
 local hook  = require(PATH .. ".libs.hook")
+require(PATH .. ".screen")
 
 local nest =
 {
@@ -127,13 +128,17 @@ function nest._setupControls()
 
     local isDown = false
     local function translateCoords(x, y)
-        if (x < 40 or x > 360) or y < 240 then
-            isDown = false
-            return false
-        end
+        if love._console_name == "3DS" then
+            if (x < 40 or x > 360) or y < 240 then
+                isDown = false
+                return false
+            end
 
-        x = math.max(0, math.min(x - 40, 320))
-        y = math.max(0, math.min(y - 240, 240))
+            x = math.max(0, math.min(x - 40, 320))
+            y = math.max(0, math.min(y - 240, 240))
+
+            return x, y
+        end
 
         return x, y
     end
