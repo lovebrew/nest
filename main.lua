@@ -27,3 +27,7 @@ end
 function love.gamepadaxis(joystick, axis, value)
     print(axis, value)
 end
+
+function love.touchmoved(id, x, y, dx, dy, pressure)
+    print(id, x, y, dx, dy, pressure)
+end

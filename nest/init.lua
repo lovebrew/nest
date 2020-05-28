@@ -86,8 +86,19 @@ function nest._setupControls()
     function love.keyreleased(key, scancode, isrepeat)
     end
 
+    function love.mousepressed(x, y, button, istouch)
+    end
+
+    function love.mousereleased(x, y, button, istouch)
+    end
+
+    function love.mousemoved(x, y, dx, dy, istouch)
+    end
+
     local joystick = love.joystick.getJoysticks()[1] or {}
     love.keyboard.setKeyRepeat(true)
+
+    -- GAMEPAD CALLBACKS
 
     function nest._keypressed(key, scancode, isrepeat)
         if not nest.controls[key] then
@@ -112,8 +123,53 @@ function nest._setupControls()
         end
     end
 
-    love.keypressed  = hook.add(love.keypressed, nest._keypressed)
+    -- TOUCH CALLBACKS
+
+    local isDown = false
+    local function translateCoords(x, y)
+        if (x < 40 or x > 360) or y < 240 then
+            isDown = false
+            return false
+        end
+
+        x = math.max(0, math.min(x - 40, 320))
+        y = math.max(0, math.min(y - 240, 240))
+
+        return x, y
+    end
+
+    function nest._touchpressed(x, y)
+        x, y = translateCoords(x, y)
+
+        if x and y then
+            love.event.push("touchpressed", 1, x, y, 0, 0, 1)
+            isDown = true
+        end
+    end
+
+    function nest._touchreleased(x, y)
+        x, y = translateCoords(x, y)
+
+        if x and y then
+            love.event.push("touchpressed", 1, x, y, 0, 0, 1)
+            isDown = false
+        end
+    end
+
+    function nest._touchmoved(x, y, dx, dy)
+        x, y = translateCoords(x, y)
+
+        if x and y and isDown then
+            love.event.push("touchmoved", 1, x, y, dx, dy, 1)
+        end
+    end
+
+    love.keypressed  = hook.add(love.keypressed,  nest._keypressed)
     love.keyreleased = hook.add(love.keyreleased, nest._keyreleased)
+
+    love.mousepressed  = hook.add(love.mousepressed,  nest._touchpressed)
+    love.mousereleased = hook.add(love.mousereleased, nest._touchreleased)
+    love.mousemoved    = hook.add(love.mousemoved,    nest._touchmoved)
 end
 
 return nest
