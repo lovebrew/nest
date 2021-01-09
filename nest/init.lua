@@ -3,6 +3,7 @@
 
 local PATH = (...):gsub('%.init$', '')
 
+
 local nest =
 {
    _VERSION     = "0.2.0",
@@ -30,6 +31,12 @@ local nest =
    ]]
 }
 
-nest.graphics = require(PATH .. ".graphics")
+local window = require(PATH .. ".window")
+require(PATH .. ".graphics")
+
+nest.load = function(name)
+    local screens = window.allocScreens(name)
+    love.run = assert(require(PATH .. ".runner"))(screens)
+end
 
 return nest
