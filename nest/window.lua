@@ -6,7 +6,8 @@ Window.__mt =
 {
     __index  = Window,
     __isSet  = false,
-    __config = nil
+    __config = nil,
+    __list   = {}
 }
 
 function Window.new(position, size, name, offset)
@@ -47,17 +48,26 @@ sizes.hac =
 }
 
 function Window.allocScreens(console)
-    local out = {}
+    Window.__list = {}
 
     local which = enums[console]
     Window.__config = console
 
     for _, args in ipairs(sizes[which]) do
         local position, size, name, offset = unpack(args)
-        table.insert(out, Window(position, size, name, offset))
+        table.insert(Window.__list, Window(position, size, name, offset))
     end
 
-    return out
+    return Window.__list
+end
+
+function Window.getWidth(name)
+    for _, value in ipairs(Window.__list) do
+        if value.name == name then
+            return value:getWidth()
+        end
+    end
+    error("Invalid screen name " .. tostring(name))
 end
 
 -- Class stuff
