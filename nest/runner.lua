@@ -1,8 +1,8 @@
-return function(windows)
-    local screens = windows
+local windows = ...
 
+return function()
     if love.load then
-        love.load(arg)
+        love.load()
     end
 
     if love.timer then
@@ -37,13 +37,14 @@ return function(windows)
         if love.graphics then
             love.graphics.origin()
 
-            for _, screen in ipairs(screens) do
+            for _, screen in ipairs(windows) do
                 love.graphics.setActiveScreen(screen.name)
+
                 screen:renderTo(function()
                     love.graphics.clear(love.graphics.getBackgroundColor())
 
                     if love.draw then
-                        love.draw(screen)
+                        love.draw(screen.name)
                     end
                 end)
 

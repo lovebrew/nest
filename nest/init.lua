@@ -36,7 +36,9 @@ require(PATH .. ".graphics")
 
 nest.load = function(name)
     local screens = window.allocScreens(name)
-    love.run = assert(require(PATH .. ".runner"))(screens)
+
+    local chunk = loadfile(love.filesystem.getSourceBaseDirectory() .. "/nest/runner.lua")
+    love.run = chunk(screens)
 end
 
 return nest
