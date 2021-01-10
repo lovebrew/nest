@@ -3,7 +3,6 @@
 
 local PATH = (...):gsub('%.init$', '')
 
-
 local nest =
 {
    _VERSION     = "0.2.0",
@@ -31,17 +30,41 @@ local nest =
    ]]
 }
 
-local window = require(PATH .. ".window")
+if love._console_name then
+    return
+end
+
+-- config flags
+local Config = require(PATH .. ".config")
+local flags = Config.flags
+
+-- overrides n stuff
+local Window = require(PATH .. ".window")
 require(PATH .. ".graphics")
 
-nest.load = function(name)
-    local screens = window.allocScreens(name)
+nest._require = function(name, ...)
+    name = string.format("%s.%s", PATH, name)
+    local chunk = require(name)
 
-    local chunk = require(PATH .. ".runner")
-    love.run = chunk(screens)
-
-    chunk = require(PATH .. ".touch")
-    chunk(window.__config)
+    local args = {...}
+    return chunk(unpack(args))
 end
+
+nest.load = function(...)
+    Config.addFlags(...)
+
+    love._console_name = Config.hasFlag(flags.USE_HAC) and "Switch" or "3DS"
+
+    local which = Config.whichFlag(flags.HORIZON)
+    local screens = Window.allocScreens(which)
+
+    love.run = nest._require("runner", screens)
+
+    nest._require("touch")
+
+    love.window.setTitle(string.format("Nintendo %s (nëst %s)", love._console_name, nest._VERSION))
+end
+
+nest.flags = Config.flags
 
 return nest

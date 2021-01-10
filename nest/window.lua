@@ -1,12 +1,13 @@
 local PATH = (...):gsub('%.[^%.]+$', '')
-local Enum = require(PATH .. ".enum.enum")
+
+local Utility = require(PATH .. ".utility")
+local Config  = require(PATH .. ".config")
 
 local Window = {}
 Window.__mt =
 {
     __index  = Window,
     __isSet  = false,
-    __config = nil,
     __list   = {}
 }
 
@@ -21,7 +22,7 @@ function Window.new(position, size, name, offset)
 
     if not Window.__isSet then
         local width, height = unpack(size)
-        if Window.__config == "ctr" then
+        if Config.hasFlag(Config.flags.USE_CTR) then
             height = height * 2
         end
         Window.__isSet = love.window.updateMode(width, height)
@@ -32,30 +33,14 @@ end
 
 -- Window Sizing --
 
-local enums = Enum("ctr", "hac")
-
-local sizes = {}
-
-sizes.ctr =
-{
-    { {0,  0  }, {400, 240}, "left",     nil       },
-    { {0,  0  }, {400, 240}, "right",    nil       },
-    { {40, 240}, {320, 240}, "bottom", { 40, 240 } }
-}
-
-sizes.hac =
-{
-    { {0, 0}, {1280, 720}, nil, nil }
-}
-
-function Window.allocScreens(console)
+function Window.allocScreens(which)
     Window.__list = {}
 
-    local which = enums[console]
-    Window.__config = console
+    local sizes = Config.sizes[which]
 
-    for _, args in ipairs(sizes[which]) do
+    for _, args in ipairs(sizes) do
         local position, size, name, offset = unpack(args)
+        print(unpack(position), unpack(size))
         table.insert(Window.__list, Window(position, size, name, offset))
     end
 
@@ -65,14 +50,14 @@ end
 -- Other
 
 function Window.getWidth(name)
-    local width = 0
-    for _, value in ipairs(Window.__list) do
-        if value.name == name then
-            width = value.canvas:getWidth()
-            break
+    if Config.hasFlag(Config.flags.USE_HAC) then
+        return 1280
+    else
+        if Utility.find({"top", "left", "right"}, name) then
+            return 400
         end
+        return 320
     end
-    return width
 end
 
 function Window.getHeight()

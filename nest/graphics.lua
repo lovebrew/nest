@@ -1,5 +1,9 @@
 local PATH = (...):gsub('%.[^%.]+$', '')
+
 local Window = require(PATH .. ".window")
+
+local Config = require(PATH .. ".config")
+local flags  = Config.flags
 
 local activeScreen = nil
 local blendFactor  = 0
@@ -37,12 +41,18 @@ end
 
 --- console stuff
 
-function love.graphics.setBlendFactor(factor)
-    blendFactor = factor
-end
+if Config.hasFlag(flags.USE_CTR) == "ctr" then
+    function love.graphics.setBlendFactor(factor)
+        blendFactor = factor
+    end
 
-function love.graphics.getBlendFactor()
-    return blendFactor
+    function love.graphics.getBlendFactor()
+        return blendFactor
+    end
+
+    function love.graphics.getStereoscopicDepth()
+        return 0.0
+    end
 end
 
 function love.graphics.setActiveScreen(screen)
