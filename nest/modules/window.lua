@@ -1,7 +1,5 @@
-local PATH = (...):gsub('%.[^%.]+$', '')
-
-local Utility = require(PATH .. ".utility")
-local Config  = require(PATH .. ".config")
+local utility = require("nest.utility")
+local config  = require("nest.config")
 
 local Window = {}
 Window.__mt =
@@ -22,9 +20,10 @@ function Window.new(position, size, name, offset)
 
     if not Window.__isSet then
         local width, height = unpack(size)
-        if Config.hasFlag(Config.flags.USE_CTR) then
+        if config.hasFlag(config.flags.USE_CTR) then
             height = height * 2
         end
+
         Window.__isSet = love.window.updateMode(width, height)
     end
 
@@ -36,11 +35,10 @@ end
 function Window.allocScreens(which)
     Window.__list = {}
 
-    local sizes = Config.sizes[which]
+    local sizes = config.sizes[which]
 
     for _, args in ipairs(sizes) do
         local position, size, name, offset = unpack(args)
-        print(unpack(position), unpack(size))
         table.insert(Window.__list, Window(position, size, name, offset))
     end
 
@@ -50,10 +48,10 @@ end
 -- Other
 
 function Window.getWidth(name)
-    if Config.hasFlag(Config.flags.USE_HAC) then
+    if config.hasFlag(config.flags.USE_HAC) then
         return 1280
     else
-        if Utility.find({"top", "left", "right"}, name) then
+        if utility.find({"top", "left", "right"}, name) then
             return 400
         end
         return 320

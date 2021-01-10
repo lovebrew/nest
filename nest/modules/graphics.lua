@@ -2,8 +2,8 @@ local PATH = (...):gsub('%.[^%.]+$', '')
 
 local Window = require(PATH .. ".window")
 
-local Config = require(PATH .. ".config")
-local flags  = Config.flags
+local config = require("nest.config")
+local flags  = config.flags
 
 local activeScreen = nil
 local blendFactor  = 0
@@ -41,7 +41,7 @@ end
 
 --- console stuff
 
-if Config.hasFlag(flags.USE_CTR) == "ctr" then
+if config.hasFlag(flags.USE_CTR) == "ctr" then
     function love.graphics.setBlendFactor(factor)
         blendFactor = factor
     end

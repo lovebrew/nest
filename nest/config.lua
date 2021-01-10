@@ -12,6 +12,12 @@ flags.USE_HAC = bit.lshift(1, 0)
 flags.USE_CTR = bit.lshift(1, 1)
 --< Internal flag for checking either console // 3
 flags.HORIZON = bit.bor(flags.USE_CTR, flags.USE_HAC)
+--< Use Keyboard input // 4
+flags.USE_KEYBOARD_AS_GAMEPAD = bit.lshift(1, 2)
+--< Use Keyboard input on Switch // 5
+flags.USE_CTR_WITH_KEYBOARD = bit.bor(flags.USE_CTR, flags.USE_KEYBOARD_AS_GAMEPAD)
+--< Use Keyboard input on 3DS // 6
+flags.USE_CTR_WITH_KEYBOARD = bit.bor(flags.USE_CTR, flags.USE_KEYBOARD_AS_GAMEPAD)
 
 local sizes = {}
 

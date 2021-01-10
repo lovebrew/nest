@@ -35,12 +35,8 @@ if love._console_name then
 end
 
 -- config flags
-local Config = require(PATH .. ".config")
-local flags = Config.flags
-
--- overrides n stuff
-local Window = require(PATH .. ".window")
-require(PATH .. ".graphics")
+local config = require(PATH .. ".config")
+local flags = config.flags
 
 nest._require = function(name, ...)
     name = string.format("%s.%s", PATH, name)
@@ -51,20 +47,28 @@ nest._require = function(name, ...)
 end
 
 nest.load = function(...)
-    Config.addFlags(...)
+    config.addFlags(...)
 
-    love._console_name = Config.hasFlag(flags.USE_HAC) and "Switch" or "3DS"
+    love._console_name = config.hasFlag(flags.USE_HAC) and "Switch" or "3DS"
 
-    local which = Config.whichFlag(flags.HORIZON)
+    -- overrides n stuff
+    local Window = require(PATH .. ".modules.window")
+    require(PATH .. ".modules.graphics")
+
+    local which = config.whichFlag(flags.HORIZON)
     local screens = Window.allocScreens(which)
 
     love.run = nest._require("runner", screens)
 
-    nest._require("touch")
+    require(PATH .. ".modules.touch")
+
+    if config.hasFlag(flags.USE_KEYBOARD_AS_GAMEPAD) then
+        require(PATH .. ".modules.keyboard")
+    end
 
     love.window.setTitle(string.format("Nintendo %s (nëst %s)", love._console_name, nest._VERSION))
 end
 
-nest.flags = Config.flags
+nest.flags = config.flags
 
 return nest
