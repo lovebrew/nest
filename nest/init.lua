@@ -37,8 +37,11 @@ require(PATH .. ".graphics")
 nest.load = function(name)
     local screens = window.allocScreens(name)
 
-    local chunk = loadfile(love.filesystem.getSourceBaseDirectory() .. "/nest/runner.lua")
+    local chunk = require(PATH .. ".runner")
     love.run = chunk(screens)
+
+    chunk = require(PATH .. ".touch")
+    chunk(window.__config)
 end
 
 return nest

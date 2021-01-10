@@ -38,7 +38,8 @@ local sizes = {}
 
 sizes.ctr =
 {
-    { {0,  0  }, {400, 240}, "top",    nil         },
+    { {0,  0  }, {400, 240}, "left",     nil       },
+    { {0,  0  }, {400, 240}, "right",    nil       },
     { {40, 240}, {320, 240}, "bottom", { 40, 240 } }
 }
 
@@ -61,22 +62,39 @@ function Window.allocScreens(console)
     return Window.__list
 end
 
+-- Other
+
 function Window.getWidth(name)
+    local width = 0
     for _, value in ipairs(Window.__list) do
         if value.name == name then
-            return value:getWidth()
+            width = value.canvas:getWidth()
+            break
         end
     end
-    error("Invalid screen name " .. tostring(name))
+    return width
+end
+
+function Window.getHeight()
+    -- constant
+    return Window.__list[1].canvas:getHeight()
 end
 
 -- Class stuff
 
 function Window:renderTo(func)
+    if self.name == "right" then
+        return
+    end
+
     return self.canvas:renderTo(func)
 end
 
 function Window:draw()
+    if self.name == "right" then
+        return
+    end
+
     local x, y = unpack(self.position)
     love.graphics.draw(self.canvas, x, y)
 end
