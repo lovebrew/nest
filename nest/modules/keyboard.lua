@@ -30,16 +30,17 @@ local bindings =
     ["2"] = "triggerright:1"
 }
 
-if not love.filesystem.getInfo("first_time_use.txt") then
-local notice = [[
-Using the love.keyboard callbacks will result in the gamepad callbacks
-having empty tables for the joystick parameter.
+if not love.filesystem.getInfo("boot.nest") then
+    local notice = [[
+    Using the love.keyboard callbacks will result in the
+    gamepad callbacks having empty tables for the joystick
+    parameter.
 
-Press OK to continue.
-]]
+    Press OK to continue.
+    ]]
 
-love.window.showMessageBox("nëst", notice, "info")
-love.filesystem.write("first_time_use.txt", "")
+    love.window.showMessageBox("nëst", notice, "info")
+    love.filesystem.write("boot.nest", "")
 end
 
 local joystick = {}

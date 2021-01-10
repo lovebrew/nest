@@ -64,6 +64,20 @@ function config.addFlags(...)
     end
 end
 
+-- Join arbitrary flags together
+function config.joinFlags(...)
+    local add = {...}
+
+    assert(#add > 0, "Cannot append zero or nil flags")
+
+    local success, typename = utility.any(add, "number")
+    assert(success, string.format("Number expected, got %s", typename))
+
+    local out = bit.bor(unpack(add))
+
+    return out
+end
+
 -- Remove flags
 function config.remFlags(...)
     local args = {...}
