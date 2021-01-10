@@ -45,7 +45,7 @@ flags.base = 0
 function config.addFlags(...)
     local add = {...}
 
-    assert(#add > 0, "Cannot append zero flags")
+    assert(#add > 0, "Cannot append zero or nil flags")
 
     local success, typename = utility.any(add, "number")
     assert(success, string.format("Number expected, got %s", typename))
@@ -53,7 +53,7 @@ function config.addFlags(...)
     flags.base = bit.bor(unpack(add))
 
     -- make sure we don't enable both consoles
-    if bit.band(flags.HORIZON, flags.base) == flags.HORIZON then
+    if config.hasFlag(flags.HORIZON) then
         error("Cannot set both USE_HAC and USE_CTR flags.")
     end
 end
@@ -68,10 +68,12 @@ function config.remFlags(...)
     end
 end
 
+-- Check if flags are empty (zero)
 function config.areEmpty()
     return flags.base == 0
 end
 
+-- Return the current flags
 function config.getFlags()
     return flags.base
 end
