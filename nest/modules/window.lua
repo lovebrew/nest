@@ -1,15 +1,37 @@
 local utility = require("nest.utility")
+
 local config  = require("nest.config")
+local flags = config.flags
 
 local Window = {}
 Window.__mt =
 {
-    __index  = Window,
-    __isSet  = false,
-    __list   = {}
+    __index = Window,
+    __isSet = false,
+    __list  = {},
+    __scale = 1
 }
 
+local function resize(position, size)
+    local scale = 1
+    if config.hasFlag(flags.USE_CTR_WITH_SCALE_2X) then
+        scale = 2
+    end
+
+    for index, value in ipairs(position) do
+        position[index] = value * scale
+    end
+
+    for index, value in ipairs(size) do
+        size[index] = value * scale
+    end
+
+    return scale
+end
+
 function Window.new(position, size, name, offset)
+    Window.__scale = resize(position, size)
+
     local window = setmetatable({
         position = position,
         size     = size,
@@ -52,9 +74,9 @@ function Window.getWidth(name)
         return 1280
     else
         if utility.find({"top", "left", "right"}, name) then
-            return 400
+            return Window.__list[1].canvas:getWidth()
         end
-        return 320
+        return Window.__list[2].canvas:getWidth()
     end
 end
 
@@ -70,7 +92,7 @@ function Window:renderTo(func)
         return
     end
 
-    return self.canvas:renderTo(func)
+    self.canvas:renderTo(func)
 end
 
 function Window:draw()
