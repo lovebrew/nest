@@ -57,7 +57,7 @@ end
 function Window.allocScreens(which)
     Window.__list = {}
 
-    local sizes = config.sizes[which]
+    local sizes = config.windowSizes[which]
 
     for _, args in ipairs(sizes) do
         local position, size, name, offset = unpack(args)
@@ -71,7 +71,7 @@ end
 
 function Window.getWidth(name)
     if config.hasFlag(config.flags.USE_HAC) then
-        return 1280
+        return Window.__list[1].canvas:getWidth()
     else
         if utility.find({"top", "left", "right"}, name) then
             return Window.__list[1].canvas:getWidth()

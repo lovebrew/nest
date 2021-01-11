@@ -1,5 +1,5 @@
 ---
--- @module nëst
+-- @module nest
 
 local PATH = (...):gsub('%.init$', '')
 

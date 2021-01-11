@@ -30,19 +30,6 @@ local bindings =
     ["2"] = "triggerright:1"
 }
 
-if not love.filesystem.getInfo("boot.nest") then
-    local notice = [[
-    Using the love.keyboard callbacks will result in the
-    gamepad callbacks having empty tables for the joystick
-    parameter.
-
-    Press OK to continue.
-    ]]
-
-    love.window.showMessageBox("nëst", notice, "info")
-    love.filesystem.write("boot.nest", "")
-end
-
 local joystick = {}
 
 local function parseGamepadAxis(str, sep)
@@ -68,8 +55,8 @@ function love.keypressed(key, _, isRepeat)
     if output:find(":") then
         local info = parseGamepadAxis(output)
         local which, value = info[1], tonumber(info[2])
-
-        love.event.push("gamepadaxis", joystick, which, value)
+        -- print(value, type(value))
+        love.handlers.gamepadaxis(joystick, which, value)
     else
         if not isRepeat then
             love.event.push("gamepadpressed", joystick, output)
@@ -88,7 +75,7 @@ function love.keyreleased(key)
         local info = parseGamepadAxis(output)
         local which, _ = unpack(info)
 
-        love.event.push("gamepadaxis", joystick, which, 0.0)
+        love.handlers.gamepadaxis(joystick, which, 0.0)
     else
         love.event.push("gamepadreleased", joystick, output)
     end

@@ -20,7 +20,7 @@ return function(windows)
                             return a or 0
                         end
                     end
-
+                    -- if name == "gamepadaxis" then print(type(c)) end
                     love.handlers[name](a, b, c, d, e, f)
                 end
             end

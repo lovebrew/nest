@@ -1,18 +1,27 @@
+---
+-- @module config
+
 local bit = require("bit")
 
 local PATH    = (...):gsub('%.[^%.]+$', '')
 local utility = require(PATH .. ".utility")
 
-local flags  = {}
 local config = {}
+
+local flags  = {}
+
+-- base flags, empty
+flags.base = 0
+
+-- Available flags list
 
 -- Enable Nintendo Switch // 1
 flags.USE_HAC = bit.lshift(1, 0)
 --< Enable Nintendo 3DS // 2
 flags.USE_CTR = bit.lshift(1, 1)
---< Internal flag for checking either console // 3
+--< Internal; Checks for either console // 3
 flags.HORIZON = bit.bor(flags.USE_CTR, flags.USE_HAC)
---< Use Keyboard input // 4
+--< Internal; Use Keyboard input // 4
 flags.USE_KEYBOARD_AS_GAMEPAD = bit.lshift(1, 2)
 --< Use Keyboard input on Switch // 5
 flags.USE_HAC_WITH_KEYBOARD = bit.bor(flags.USE_HAC, flags.USE_KEYBOARD_AS_GAMEPAD)
@@ -25,10 +34,12 @@ flags.USE_CTR_WITH_SCALE_2X = bit.bor(flags.USE_CTR, flags.USE_SCALE_2X)
 --< Use 3DS with x2 Scaling and Keyboard input
 flags.USE_CTR_WITH_SCALE_2X_AND_KEYBOARD = bit.bor(flags.USE_SCALE_2X, flags.USE_CTR_WITH_KEYBOARD)
 
-local sizes = {}
+-- Available window sizes
 
-sizes[flags.USE_HAC] = {}
-sizes[flags.USE_CTR] = {}
+local windowSizes = {}
+
+windowSizes[flags.USE_HAC] = {}
+windowSizes[flags.USE_CTR] = {}
 
 local function map(t, values)
     for _, value in ipairs(values) do
@@ -43,17 +54,19 @@ local ctrMapping =
     { {40, 240}, {320, 240}, "bottom", { 40, 240 } }
 }
 
-map(sizes[flags.USE_CTR], ctrMapping)
+map(windowSizes[flags.USE_CTR], ctrMapping)
 
 local hacMapping =
 {
     { {0, 0}, {1280, 720}, nil, nil }
 }
 
-map(sizes[flags.USE_HAC], hacMapping)
+map(windowSizes[flags.USE_HAC], hacMapping)
 
--- Add flags
-flags.base = 0
+config.flags = flags
+config.windowSizes = windowSizes
+
+-- Add flags to the base config
 function config.addFlags(...)
     local add = {...}
 
@@ -85,7 +98,7 @@ function config.joinFlags(...)
 end
 
 -- Remove flags
-function config.remFlags(...)
+function config.removeFlags(...)
     local args = {...}
 
     -- use ipairs for explicit logic
@@ -104,7 +117,8 @@ function config.getFlags()
     return flags.base
 end
 
--- Check if we have a specific flag
+-- Check if we have a
+-- specific flag set
 function config.hasFlag(flag)
     return bit.band(flags.base, flag) == flag
 end
@@ -115,8 +129,5 @@ end
 function config.whichFlag(borFlags)
     return bit.band(flags.base, borFlags)
 end
-
-config.flags = flags
-config.sizes = sizes
 
 return config
