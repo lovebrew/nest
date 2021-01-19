@@ -2,7 +2,9 @@ local PATH = (...):gsub('%.[^%.]+$', '')
 
 local Window = require(PATH .. ".window")
 
-local config = require("nest.config")
+PATH = (...):gsub("%.modules.+", '')
+
+local config = require(PATH .. ".config")
 local flags  = config.flags
 
 local activeScreen = nil

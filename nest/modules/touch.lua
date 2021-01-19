@@ -1,4 +1,5 @@
-local config  = require("nest.config")
+local PATH = (...):gsub("%.modules.+", '')
+local config  = require(PATH .. ".config")
 local flags   = config.flags
 
 local function translate(x, y)

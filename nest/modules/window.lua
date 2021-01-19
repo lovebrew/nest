@@ -1,6 +1,7 @@
-local utility = require("nest.utility")
+local PATH = (...):gsub("%.modules.+", '')
+local utility = require(PATH .. ".utility")
 
-local config  = require("nest.config")
+local config  = require(PATH .. ".config")
 local flags = config.flags
 
 local Window = {}

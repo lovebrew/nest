@@ -51,20 +51,8 @@ nest.load = function(...)
 
     love._console_name = config.hasFlag(flags.USE_HAC) and "Switch" or "3DS"
 
-    -- overrides n stuff
-    local Window = require(PATH .. ".modules.window")
-    require(PATH .. ".modules.graphics")
-
-    local which = config.whichFlag(flags.HORIZON)
-    local screens = Window.allocScreens(which)
-
+    local screens = require(PATH .. ".modules")
     love.run = nest._require("runner", screens)
-
-    require(PATH .. ".modules.touch")
-
-    if config.hasFlag(flags.USE_KEYBOARD_AS_GAMEPAD) then
-        require(PATH .. ".modules.keyboard")
-    end
 
     love.window.setTitle(string.format("Nintendo %s (nëst %s)", love._console_name, nest._VERSION))
 end
