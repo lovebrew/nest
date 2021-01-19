@@ -1,4 +1,3 @@
-local config = require "nest.config"
 local PATH = (...):gsub('%.init$', '')
 
 -- overrides n stuff
