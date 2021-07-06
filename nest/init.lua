@@ -5,7 +5,7 @@ local PATH = (...):gsub('%.init$', '')
 
 local nest =
 {
-   _VERSION     = "0.2.0",
+   _VERSION     = "0.3.0",
    _DESCRIPTION = "LÖVE Potion Compatabiility Layer library",
    _LICENSE     =
    [[
