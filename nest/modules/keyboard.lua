@@ -1,36 +1,24 @@
-local bindings =
-{
-    a = "a",
-    s = "b",
-    z = "x",
-    x = "y",
+local path = (...):gsub('%.modules.+', '')
 
-    m = "start",
-    n = "back",
-
-    f = "dpleft",
-    h = "dpright",
-    t = "dpup",
-    g = "dpdown",
-
-    q = "leftshoulder",
-    w = "rightshoulder",
-
-    left = "leftx:-1",
-    right = "leftx:1",
-    up = "lefty:-1",
-    down = "lefty:1",
-
-    j = "rightx:-1",
-    l = "rightx:1",
-    i = "righty:-1",
-    k = "righty:1",
-
-    ["1"] = "triggerleft:1",
-    ["2"] = "triggerright:1"
-}
+local json = require(path .. ".libraries.json")
 
 local joystick = {}
+
+local keyboard = {}
+
+local bindings = {}
+function keyboard.init()
+    local jsonString = love.filesystem.read(path .. "/bindings.json")
+    local decoded = json.decode(jsonString)
+
+    for key, value in pairs(decoded.buttons) do
+        bindings[value] = key
+    end
+
+    for key, value in pairs(decoded.axes) do
+        bindings[value] = key
+    end
+end
 
 local function parseGamepadAxis(str, sep)
     local sep, fields = sep or ":", {}
@@ -54,8 +42,11 @@ function love.keypressed(key, _, isRepeat)
 
     if output:find(":") then
         local info = parseGamepadAxis(output)
-        local which, value = info[1], tonumber(info[2])
-        -- print(value, type(value))
+        local which, value = info[1], 1.0
+        if info[2] == "neg" then
+            value = -value
+        end
+
         love.handlers.gamepadaxis(joystick, which, value)
     else
         if not isRepeat then
@@ -80,3 +71,5 @@ function love.keyreleased(key)
         love.event.push("gamepadreleased", joystick, output)
     end
 end
+
+return keyboard

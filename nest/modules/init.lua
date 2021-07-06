@@ -1,20 +1,15 @@
-local PATH = (...):gsub('%.init$', '')
+local path = (...):gsub('%.modules$', '')
 
 -- overrides n stuff
-local Window = require(PATH .. ".window")
-require(PATH .. ".graphics")
 
-local CONFIGPATH = PATH:gsub("%.modules$", '')
-local config = require(CONFIGPATH .. ".config")
-local flags = config.flags
+local windows = require(path .. ".modules.window").init()
+local config  = require(path .. ".config")
 
-local which = config.whichFlag(flags.HORIZON)
-local screens = Window.allocScreens(which)
+require(path .. ".modules.graphics")
+require(path .. ".modules.touch")
 
-require(PATH .. ".touch")
-
-if config.hasFlag(flags.USE_KEYBOARD_AS_GAMEPAD) then
-    require(PATH .. ".keyboard")
+if config.get("emulateJoystick") then
+    require(path .. ".modules.keyboard").init()
 end
 
-return screens
+return windows

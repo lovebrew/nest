@@ -1,41 +1,56 @@
-local PATH = (...):gsub("%.modules.+", '')
-local config  = require(PATH .. ".config")
-local flags   = config.flags
+local path = (...):gsub("%.modules.+", '')
+
+local config = require(path .. ".config")
+local window = require(path .. ".modules.window")
 
 local function translate(x, y)
-    if config.hasFlag(flags.USE_HAC) then
-        return false
+    local result = {x = x, y = y}
+
+    if config.isSetTo("mode", "hac") then
+        return result
     end
 
-    local function inViewport(x, y)
-        return x >= 40 and y >= 240
+    local scale = config.get("scale")
+    local function inViewport(_x, _y)
+        return _x >= 40 * scale and _y >= 240 * scale
     end
 
     if not inViewport(x, y) then
         return false
     end
 
-    x = math.max(0, math.min(x - 40,  320))
-    y = math.max(0, math.min(y - 240, 240))
+    local maxWidth  = window.getWidth("bottom")
+    local maxHeight = window.getHeight()
+
+    local maxScaledWidth  = maxWidth  * scale
+    local maxScaledHeight = maxHeight * scale
+
+    local widthOffset  = 40 * scale
+    local heightOffset = 240 * scale
+
+    result.x = math.floor(math.max(0, math.min((x - widthOffset)  / maxScaledWidth,  1)) * maxWidth)
+    result.y = math.floor(math.max(0, math.min((y - heightOffset) / maxScaledHeight, 1)) * maxHeight)
+
+    return result
+end
+
+local function pushEvent(event, translate, dx, dy, pressure)
+    if translate then
+        love.event.push(event, 1, translate.x, translate.y, dx, dy, pressure)
+    end
 end
 
 function love.mousepressed(x, y)
-    if not translate(x, y) then
-        return
-    end
-    love.event.push("touchpressed", 1, x, y, 0, 0, 1)
+    local result = translate(x, y)
+    pushEvent("touchpressed", result, 0, 0, 1)
 end
 
 function love.mousemoved(x, y, dx, dy)
-    if not translate(x, y) then
-        return
-    end
-    love.event.push("touchmoved", 1, x, y, dx, dy, 1)
+    local result = translate(x, y)
+    pushEvent("touchmoved", result, dx, dy, 1)
 end
 
 function love.mousereleased(x, y)
-    if not translate(x, y) then
-        return
-    end
-    love.event.push("touchreleased", 1, x, y, 0, 0, 1)
+    local result = translate(x, y)
+    pushEvent("touchreleased", result, 0, 0, 0)
 end

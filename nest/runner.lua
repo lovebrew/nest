@@ -20,7 +20,6 @@ return function(windows)
                             return a or 0
                         end
                     end
-                    -- if name == "gamepadaxis" then print(type(c)) end
                     love.handlers[name](a, b, c, d, e, f)
                 end
             end
@@ -39,7 +38,7 @@ return function(windows)
                 for _, screen in ipairs(windows) do
                     love.graphics.setActiveScreen(screen.name)
 
-                    screen:renderTo(function()
+                    screen.renderTo(function()
                         love.graphics.clear(love.graphics.getBackgroundColor())
 
                         if love.draw then
@@ -47,7 +46,7 @@ return function(windows)
                         end
                     end)
 
-                    screen:draw()
+                    screen.draw()
                 end
 
                 love.graphics.present()

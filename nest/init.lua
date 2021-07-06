@@ -36,7 +36,7 @@ end
 
 -- config flags
 local config = require(PATH .. ".config")
-local flags = config.flags
+local title = "Nintendo %s (nëst %s)"
 
 nest._require = function(name, ...)
     name = string.format("%s.%s", PATH, name)
@@ -46,17 +46,15 @@ nest._require = function(name, ...)
     return chunk(unpack(args))
 end
 
-nest.load = function(...)
-    config.addFlags(...)
+function nest:init(...)
+    config.set(...)
 
-    love._console_name = config.hasFlag(flags.USE_HAC) and "Switch" or "3DS"
+    love._console_name = (config.isSetTo("mode", "ctr")) and "3DS" or "Switch"
 
     local screens = require(PATH .. ".modules")
     love.run = nest._require("runner", screens)
 
-    love.window.setTitle(string.format("Nintendo %s (nëst %s)", love._console_name, nest._VERSION))
+    love.window.setTitle(title:format(love._console_name, nest._VERSION))
 end
-
-nest.flags = config.flags
 
 return nest

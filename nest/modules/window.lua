@@ -1,112 +1,93 @@
 local PATH = (...):gsub("%.modules.+", '')
-local utility = require(PATH .. ".utility")
-
 local config  = require(PATH .. ".config")
-local flags = config.flags
 
-local Window = {}
-Window.__mt =
-{
-    __index = Window,
-    __isSet = false,
-    __list  = {},
-    __scale = 1
-}
+local window = {}
 
-local function resize(position, size)
-    local scale = 1
-    if config.hasFlag(flags.USE_CTR_WITH_SCALE_2X) then
-        scale = 2
-    end
+window.__screens = {}
+window.__scale   = config.get("scale")
 
-    for index, value in ipairs(position) do
-        position[index] = value * scale
-    end
+function window.newScreen(name, x, y, width, height)
+    local result = {}
 
-    for index, value in ipairs(size) do
-        size[index] = value * scale
-    end
+    local scale = window.__scale
 
-    return scale
-end
+    result.name   = name
+    result.canvas = love.graphics.newCanvas(width * scale, height * scale)
 
-function Window.new(position, size, name, offset)
-    Window.__scale = resize(position, size)
-
-    local window = setmetatable({
-        position = position,
-        size     = size,
-        canvas = love.graphics.newCanvas(unpack(size)),
-        name   = name or "default",
-        offset = offset or nil
-    }, Window.__mt)
-
-    if not Window.__isSet then
-        local width, height = unpack(size)
-        if config.hasFlag(config.flags.USE_CTR) then
-            height = height * 2
+    result.renderTo = function(func)
+        if result.name == "right" then
+            return
         end
 
-        Window.__isSet = love.window.updateMode(width, height)
+        result.canvas:renderTo(func)
     end
 
-    return window
-end
+    result.draw = function()
+        if result.name == "right" then
+            return
+        end
 
--- Window Sizing --
-
-function Window.allocScreens(which)
-    Window.__list = {}
-
-    local sizes = config.windowSizes[which]
-
-    for _, args in ipairs(sizes) do
-        local position, size, name, offset = unpack(args)
-        table.insert(Window.__list, Window(position, size, name, offset))
+        love.graphics.draw(result.canvas, x * scale, y * scale)
     end
 
-    return Window.__list
+    return result
 end
 
--- Other
+function window.init()
+    local mode = config.get("mode")
 
-function Window.getWidth(name)
-    if config.hasFlag(config.flags.USE_HAC) then
-        return Window.__list[1].canvas:getWidth()
+    if mode == "ctr" then
+        local names = {"left", "right", "bottom"}
+
+        for index = 1, 3 do
+            local width = index ~= 3 and 400 or 320
+            local x, y = index < 3 and 0 or 40, index < 3 and 0 or 240
+
+            local screen = window.newScreen(names[index], x, y, width, 240)
+            table.insert(window.__screens, screen)
+        end
     else
-        if utility.find({"top", "left", "right"}, name) then
-            return Window.__list[1].canvas:getWidth()
+        local screen = window.newScreen("default", 1280, 720)
+        table.insert(window.__screens, screen)
+    end
+
+    local width, height = window._getWindowWidth(), window._getWindowHeight()
+    love.window.updateMode(width * window.getScale(), height * window.getScale())
+
+    return window.__screens
+end
+
+function window.getScale()
+    return window.__scale
+end
+
+function window.getWidth(name)
+    if config.isSetTo("mode", "hac") then
+        return window.__screens[1].canvas:getWidth() / window.__scale
+    else
+        if name ~= "bottom" then
+            return window.__screens[1].canvas:getWidth() / window.__scale
         end
-        return Window.__list[2].canvas:getWidth()
+        return window.__screens[3].canvas:getWidth() / window.__scale
     end
 end
 
-function Window.getHeight()
-    -- constant
-    return Window.__list[1].canvas:getHeight()
-end
-
--- Class stuff
-
-function Window:renderTo(func)
-    if self.name == "right" then
-        return
+function window._getWindowWidth()
+    if config.isSetTo("mode", "hac") then
+        return 1280
     end
-
-    self.canvas:renderTo(func)
+    return 400
 end
 
-function Window:draw()
-    if self.name == "right" then
-        return
+function window._getWindowHeight()
+    if config.isSetTo("mode", "hac") then
+        return 720
     end
-
-    local x, y = unpack(self.position)
-    love.graphics.draw(self.canvas, x, y)
+    return 480
 end
 
-return setmetatable(Window, {
-    __call = function(_, ...)
-       return Window.new(...)
-    end,
-})
+function window.getHeight()
+    return window.__screens[1].canvas:getHeight()
+end
+
+return window
