@@ -26,7 +26,8 @@ function window.newScreen(name, x, y, width, height)
         if result.name == "right" then
             return
         end
-
+        
+        love.graphics.setColor(1, 1, 1, 1)
         love.graphics.draw(result.canvas, x * scale, y * scale)
     end
 
