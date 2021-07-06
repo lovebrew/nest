@@ -11,18 +11,16 @@ Currently nëst supports LÖVE Potion version 2.0.0 which is currently a work-in
 Simply `require` the library folder and call the load function with the appropriate flag.
 
 ```lua
-local nest = require('path.to.nest')
-nest.load(nest.flags.MY_FLAG_HERE)
+require('path.to.nest'):init(config)
 ```
 
-Available (and supported) flags:
+Available (and supported) options:
 
-| Name                  | Description                         |
-|-----------------------|-------------------------------------|
-| USE_HAC               | Enable Nintendo Switch              |
-| USE_CTR               | Enable Nintendo 3DS                 |
-| USE_HAC_WITH_KEYBOARD | Enable Switch with Keyboard support |
-| USE_CTR_WITH_KEYBOARD | Enable 3DS with Keyboard support    |
+| Name                  | Description                                  | Values        |
+|-----------------------|----------------------------------------------|---------------|
+| mode                  | Enable a specific console mode               | "ctr", "hac"  |
+| scale                 | Scale the window size                        | 1, 2          |
+| emulateJoystick       | Enable joystick emulation via keyboard input | false, true   |
 
 ## Notes
 
