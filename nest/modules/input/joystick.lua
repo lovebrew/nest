@@ -1,21 +1,17 @@
 local path = (...):gsub('%.modules.+', '')
 
-local json = require(path .. ".libraries.json")
-
 local joystick = {}
-
 local keyboard = {}
-
 local bindings = {}
-function keyboard.init()
-    local jsonString = love.filesystem.read(path .. "/bindings.json")
-    local decoded = json.decode(jsonString)
 
-    for key, value in pairs(decoded.buttons) do
+function keyboard.init()
+    local bindings = require(path .. ".bindings")
+
+    for key, value in pairs(bindings.buttons) do
         bindings[value] = key
     end
 
-    for key, value in pairs(decoded.axes) do
+    for key, value in pairs(bindings.axes) do
         bindings[value] = key
     end
 end
@@ -40,7 +36,7 @@ function love.keypressed(key, _, isRepeat)
 
     local output = bindings[key]
 
-    if output:find(":") then
+    if type(output) == "table" then
         local info = parseGamepadAxis(output)
         local which, value = info[1], 1.0
         if info[2] == "neg" then

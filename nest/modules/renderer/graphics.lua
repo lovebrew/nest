@@ -1,5 +1,4 @@
 local PATH = (...):gsub('%.[^%.]+$', '')
-
 local window = require(PATH .. ".window")
 
 PATH = (...):gsub("%.modules.+", '')
@@ -7,7 +6,6 @@ PATH = (...):gsub("%.modules.+", '')
 local config = require(PATH .. ".config")
 
 local activeScreen = nil
-local blendFactor  = 0
 
 local names = {}
 
@@ -21,11 +19,11 @@ function love.graphics.getWidth(screen)
         screen = activeScreen
     end
 
-    return window.getWidth(screen)
+    return window.getCanvasWidth(screen)
 end
 
 function love.graphics.getHeight()
-    return window.getHeight()
+    return window.getCanvasHeight()
 end
 
 function love.graphics.getDimensions(screen)
@@ -33,8 +31,8 @@ function love.graphics.getDimensions(screen)
         screen = activeScreen
     end
 
-    local width  = window.getWidth(screen)
-    local height = window.getHeight()
+    local width  = window.getCanvasWidth(screen)
+    local height = window.getCanvasHeight()
 
     return width, height
 end
@@ -42,15 +40,7 @@ end
 --- console stuff
 
 if config.isSetTo("mode", "ctr") then
-    function love.graphics.setBlendFactor(factor)
-        blendFactor = factor
-    end
-
-    function love.graphics.getBlendFactor()
-        return blendFactor
-    end
-
-    function love.graphics.getStereoscopicDepth()
+    function love.graphics.get3DDepth()
         return 0.0
     end
 end

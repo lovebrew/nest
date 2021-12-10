@@ -1,11 +1,8 @@
----
--- @module nest
-
 local PATH = (...):gsub('%.init$', '')
 
 local nest =
 {
-   _VERSION     = "0.3.0",
+   _VERSION     = "0.3.1",
    _DESCRIPTION = "LÖVE Potion Compatabiility Layer library",
    _LICENSE     =
    [[
@@ -31,7 +28,7 @@ local nest =
 }
 
 if love._console_name then
-    return
+    return false
 end
 
 -- config flags
@@ -54,7 +51,8 @@ function nest:init(...)
     local screens = require(PATH .. ".modules")
     love.run = nest._require("runner", screens)
 
-    love.window.setTitle(title:format(love._console_name, nest._VERSION))
+    local windowTitle = title:format(love._console_name, nest._VERSION)
+    love.window.setTitle(windowTitle)
 end
 
 return nest

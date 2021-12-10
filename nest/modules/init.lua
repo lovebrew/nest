@@ -1,15 +1,14 @@
 local path = (...):gsub('%.modules$', '')
+local config = require(path .. ".config")
 
 -- overrides n stuff
-
-local windows = require(path .. ".modules.window").init()
-local config  = require(path .. ".config")
-
-require(path .. ".modules.graphics")
-require(path .. ".modules.touch")
-
+require(path .. ".modules.input.touch")
 if config.get("emulateJoystick") then
-    require(path .. ".modules.keyboard").init()
+    require(path .. ".modules.input.joystick").init()
 end
+require(path .. ".modules.input.keyboard")
 
-return windows
+require(path .. ".modules.renderer.graphics")
+
+local emulationMode = config.get("mode")
+return require(path .. ".modules.renderer.window").init(emulationMode)
