@@ -3,7 +3,7 @@ local config = require(path .. ".config")
 
 -- overrides n stuff
 require(path .. ".modules.input.touch")
-if config.get("emulateJoystick") then
+if config.isSet("emulateJoystick") then
     require(path .. ".modules.input.joystick").init()
 end
 require(path .. ".modules.input.keyboard")

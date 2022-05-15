@@ -2,10 +2,9 @@ local PATH = (...):gsub('%.init$', '')
 
 local nest =
 {
-   _VERSION     = "0.3.1",
-   _DESCRIPTION = "LÖVE Potion Compatabiility Layer library",
-   _LICENSE     =
-   [[
+    _VERSION     = "0.3.1",
+    _DESCRIPTION = "LÖVE Potion Compatabiility Layer library",
+    _LICENSE     = [[
        MIT LICENSE
        Copyright (c) 2020-2021 Jeremy S. Postelnek / TurtleP
        Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,7 +27,11 @@ local nest =
 }
 
 if love._console_name then
-    return false
+    function nest:init()
+        -- stubbed
+    end
+
+    return
 end
 
 -- config flags
@@ -39,7 +42,7 @@ nest._require = function(name, ...)
     name = string.format("%s.%s", PATH, name)
     local chunk = require(name)
 
-    local args = {...}
+    local args = { ... }
     return chunk(unpack(args))
 end
 

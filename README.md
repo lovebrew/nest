@@ -22,6 +22,14 @@ Available (and supported) options:
 | scale                 | Scale the window size                        | 1, 2          | ×        |
 | emulateJoystick       | Enable joystick emulation via keyboard input | false, true   | ×        |
 
+The configuration is a table with these options. For example:
+
+```lua
+require("nest"):init({mode = "ctr"})
+```
+
+This would enable 3DS mode.
+
 ## Notes
 
 nëst will not automatically handle changes between 3DS and Switch. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
