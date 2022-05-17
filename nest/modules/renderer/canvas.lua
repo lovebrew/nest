@@ -17,7 +17,7 @@ function canvas:renderTo(func)
         return
     end
 
-    self.target:renderTo(assert:type(func, "function"))
+    self.target:renderTo(func)
 end
 
 function canvas:draw()
