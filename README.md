@@ -8,10 +8,16 @@ Currently nëst supports LÖVE Potion version 2.0.0 and up. Please note that if 
 
 ## Usage
 
-Simply `require` the library folder and call the init function with the appropriate options-filled table.
+Simply `require` the library folder and call the init function with the appropriate options-filled table at the top of your `main.lua`, outside of LÖVE functions.
 
 ```lua
 require('path.to.nest'):init(config)
+
+function love.load()
+  -- code
+end
+
+-- mode code
 ```
 
 Available (and supported) options:
