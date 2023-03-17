@@ -5,13 +5,13 @@ local keyboard = {}
 local bindings = {}
 
 function keyboard.init()
-    local bindings = require(path .. ".bindings")
+    local loadedBindings = require(path .. ".bindings")
 
-    for key, value in pairs(bindings.buttons) do
+    for key, value in pairs(loadedBindings.buttons) do
         bindings[value] = key
     end
 
-    for key, value in pairs(bindings.axes) do
+    for key, value in pairs(loadedBindings.axes) do
         bindings[value] = key
     end
 end
