@@ -70,7 +70,7 @@ end
 
 ---Initialize the configuration for later. \
 ---If args.console is `nil`, disable nest.
----@param args { scale?: integer, console: string, joystick: love.Joystick, docked?: boolean, mode?: string }
+---@param args { scale?: integer, console: string, emulateJoystick: boolean, docked?: boolean, mode?: string }
 function config.set(args)
     if nil_or_whitespace(args.console) then
         config._loaded = false
@@ -84,7 +84,7 @@ function config.set(args)
         end
     end)
 
-    config._joystick = args.joystick or true
+    config._emulateJoystick = args.emulateJoystick or true
 
     if config._console == "switch" then
         config._docked = args.docked or config._defaultDocked
