@@ -36,13 +36,13 @@ return function(windows)
                 love.graphics.origin()
 
                 for _, screen in ipairs(windows) do
-                    love.graphics.setActiveScreen(screen.name)
+                    love.graphics.setActiveScreen(screen:getName())
 
                     screen:renderTo(function()
                         love.graphics.clear(love.graphics.getBackgroundColor())
 
                         if love.draw then
-                            love.draw(screen.name)
+                            love.draw(screen:getName())
                         end
                     end)
 

@@ -1,4 +1,4 @@
-local PATH = (...):gsub('%.init$', '')
+local path = (...):gsub('%.init$', '')
 
 local nest =
 {
@@ -34,22 +34,37 @@ if love._console_name then
 end
 
 -- config flags
-local config = require(PATH .. ".config")
+local config = require(path .. ".config")
 local title = "Nintendo %s (nëst %s)"
 
 nest._require = function(name, ...)
-    name = string.format("%s.%s", PATH, name)
+    name = string.format("%s.%s", path, name)
     local chunk = require(name)
+
+    if type(chunk) ~= "function" then
+        return chunk
+    end
 
     local args = { ... }
     return chunk(unpack(args))
 end
 
-function nest:init(...)
-    config.set(...)
+function nest:init(args)
+    local success = config.set(args or {})
 
-    love._console_name = (config.isSetTo("mode", "ctr")) and "3DS" or "Switch"
-    love.run = nest._require("runner", screens)
+    if not success then
+        return
+    end
+
+    config.parseBindingInfo()
+    love._console_name = config.getName()
+
+    nest._require("modules.input")
+
+    local video = nest._require("modules.video")
+    video.init(config.get("console"), { docked = config.get("docked"), mode = config.get("mode") })
+
+    love.run = nest._require("runner", video.getFramebuffers())
 
     local windowTitle = title:format(love._console_name, nest._VERSION)
     love.window.setTitle(windowTitle)
