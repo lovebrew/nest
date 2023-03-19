@@ -2,11 +2,11 @@ local PATH = (...):gsub('%.init$', '')
 
 local nest =
 {
-    _VERSION     = "0.3.1",
+    _VERSION     = "0.4.0",
     _DESCRIPTION = "LÖVE Potion Compatabiility Layer library",
     _LICENSE     = [[
        MIT LICENSE
-       Copyright (c) 2020-2021 Jeremy S. Postelnek / TurtleP
+       Copyright (c) 2020-2023 TurtleP
        Permission is hereby granted, free of charge, to any person obtaining a
        copy of this software and associated documentation files (the
        "Software"), to deal in the Software without restriction, including
@@ -28,7 +28,6 @@ local nest =
 
 if love._console_name then
     function nest:init()
-        -- stubbed
     end
 
     return
@@ -50,8 +49,6 @@ function nest:init(...)
     config.set(...)
 
     love._console_name = (config.isSetTo("mode", "ctr")) and "3DS" or "Switch"
-
-    local screens = require(PATH .. ".modules")
     love.run = nest._require("runner", screens)
 
     local windowTitle = title:format(love._console_name, nest._VERSION)
