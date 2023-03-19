@@ -40,4 +40,6 @@ This would enable 3DS mode.
 
 ## Notes
 
-nëst will not automatically handle changes between 3DS and Switch. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
+1. nëst will not automatically handle changes between 3DS and Switch. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
+
+2. In Wii U emulation, if you wish to access the gamepad view, press tab. This will swap between the TV and Gamepad!
