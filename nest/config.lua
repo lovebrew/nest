@@ -4,12 +4,13 @@ local assert = require(path .. ".libraries.assert")
 ---@class config
 ---@field private _console string
 ---@field private _scale integer
+---@field private _emulateJoystick boolean
 local config = {}
 config.__index = config
 
 config._console = ""
 config._scale = 1
-config._joystick = {}
+config._emulateJoystick = false
 config._loaded = false
 config._keybinds = {}
 
@@ -27,7 +28,7 @@ local consoles = {
     ["wii u"]  = "cafe",
 }
 
-local modes = {
+local wiiu_modes = {
     "1080p",
     "720p",
     "480p"
@@ -83,15 +84,12 @@ function config.set(args)
         end
     end)
 
-    config._joystick = args.joystick
-    if love.joystick.getJoystickCount() > 0 then
-        config._joystick = love.joystick.getJoysticks()[1]
-    end
+    config._joystick = args.joystick or true
 
     if config._console == "switch" then
         config._docked = args.docked or config._defaultDocked
     elseif config._console == "wii u" then
-        config._mode = find_match(modes, function(_, value)
+        config._mode = find_match(wiiu_modes, function(_, value)
                 if args.mode == value then
                     return true
                 end

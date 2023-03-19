@@ -22,16 +22,18 @@ end
 
 Available (and supported) options:
 
-| Name                  | Description                                  | Values        | Required |
-|-----------------------|----------------------------------------------|---------------|:--------:|
-| mode                  | Enable a specific console mode               | "ctr", "hac"  | ✓        |
-| scale                 | Scale the window size                        | 1, 2          | ×        |
-| emulateJoystick       | Enable joystick emulation via keyboard input | false, true   | ×        |
+| Name            | Description                                         | Values                   | Required |
+| --------------- | --------------------------------------------------- | ------------------------ | :------: |
+| console         | Enable a specific console mode                      | "3ds", "switch", "wii u" |    ✓     |
+| scale           | Scale the window size                               | 1, 2, or 3               |    ×     |
+| emulateJoystick | Enable joystick emulation via keyboard input        | false, true              |    ×     |
+| docked          | Set whether the Nintendo Switch emulation is docked | false, true              |    ×     |
+| mode            | Set the TV mode for the Wii U                       | "480p", "720p", "1080p"  |    ×     |
 
 The configuration is a table with these options. For example:
 
 ```lua
-require("nest"):init({mode = "ctr"})
+require("nest"):init({console = "3ds"})
 ```
 
 This would enable 3DS mode.

@@ -59,7 +59,9 @@ function nest:init(args)
     config.parseBindingInfo()
     love._console_name = config.getName()
 
-    nest._require("modules.input")
+    if config.get("emulateJoystick") then
+        nest._require("modules.input")
+    end
 
     local video = nest._require("modules.video")
     video.init(config.get("console"), { docked = config.get("docked"), mode = config.get("mode") })
