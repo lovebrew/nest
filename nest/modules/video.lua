@@ -26,6 +26,7 @@ local function find_max(items, f)
     return current_max
 end
 
+-- Credit: https://shorturl.at/tyENT
 local function foreach(t, f)
 	for i = 1, #t do
 		local result = f(t[i], i)
