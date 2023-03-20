@@ -1,14 +1,18 @@
-require("nest"):init({ console = "switch", docked = true })
+require("nest"):init({ console = "3ds" })
 
+local canvas = nil
 function love.load()
     love.graphics.setBackgroundColor(1, 0, 0)
+    canvas = love.graphics.newCanvas(200, 120)
 end
 
 function love.draw(screen)
-    if screen == "tv" then
-        love.graphics.rectangle("fill", 300, 300 + math.sin(love.timer.getTime() * 2) * 4, 64, 64)
-    end
-    love.graphics.circle("fill", 400, 400, 6)
+    love.graphics.setCanvas(canvas)
+    love.graphics.rectangle("fill", 50, 30, 100, 60)
+    love.graphics.setCanvas()
+
+    love.graphics.draw(canvas, 100, 60)
+    love.graphics.rectangle("line", 100, 60, 200, 120)
 end
 
 function love.gamepadpressed(_, button)

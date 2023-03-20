@@ -21,6 +21,7 @@ function framebuffer.new(name, config)
 
     instance.hidden = (name == "right") or (name == "gamepad")
     instance.extra = config.extra
+    instance.shouldRenderTo = true
 
     instance.scale = config.scale or 1
     instance.canvas = love.graphics.newCanvas(instance.width, instance.height)
@@ -40,6 +41,10 @@ function framebuffer:renderTo(render_func)
         return
     end
 
+    if not self.shouldRenderTo then
+        return
+    end
+
     self.canvas:renderTo(assert:type(render_func, "function"))
 end
 
@@ -55,6 +60,14 @@ end
 
 function framebuffer:toggle()
     self.hidden = not self.hidden
+end
+
+function framebuffer:toggleRenderTo()
+    self.shouldRenderTo = not self.shouldRenderTo
+end
+
+function framebuffer:getCanvas()
+    return self.canvas
 end
 
 ---Get the name of this framebuffer

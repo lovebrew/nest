@@ -26,6 +26,16 @@ local function find_max(items, f)
     return current_max
 end
 
+local function foreach(t, f)
+	for i = 1, #t do
+		local result = f(t[i], i)
+		if result ~= nil then
+			return result
+		end
+	end
+	return t
+end
+
 ---Initializes the video module
 ---@param console string name of the console
 ---@param extra table extra data for the framebuffer information
@@ -63,7 +73,7 @@ function video.getFramebuffers()
 end
 
 ----
---- love overrides
+--- love callback hooks
 ----
 
 local valid_console_input = {
@@ -119,6 +129,10 @@ for _, callback in ipairs(love_events) do
     end
 end
 
+----
+--- love overrides
+----
+
 local active_screen = nil
 function love.graphics.setActiveScreen(screen)
     active_screen = screen
@@ -129,20 +143,21 @@ function love.graphics.getActiveScreen()
 end
 
 local originalSetCanvas = love.graphics.setCanvas
-local lastScreenCanvas = nil
 function love.graphics.setCanvas(...)
-    local arg = { ... }
+    local length = select("#", ...)
 
-    if #arg == 1 then
-        lastScreenCanvas = arg[1] -- Store the current screens canvas, as to be restored in a later call
-    end
+    if length == 1 then
+        foreach(video._framebuffers, function(element, _)
+            element:toggleRenderTo()
+        end)
 
-    if #arg == 0 and lastScreenCanvas then
-        -- Restore the last screens canvas
-        originalSetCanvas(lastScreenCanvas)
+        originalSetCanvas(...)
     else
-        -- Nothing to restore, just call the original setCanvas with the args provided
-        originalSetCanvas(unpack(arg))
+        originalSetCanvas(...)
+
+        foreach(video._framebuffers, function(element, _)
+            element:toggleRenderTo()
+        end)
     end
 end
 
