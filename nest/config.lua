@@ -52,6 +52,7 @@ local function round(v)
     return math.floor(v + 0.5)
 end
 
+-- Credit:https://shorturl.at/kqKMZ
 local function title_case(s)
     s = s:gsub("%s%l", string.upper)
     s = s:gsub("^%l", string.upper)

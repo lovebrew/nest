@@ -7,10 +7,13 @@ local data = require(path .. ".data.screens")
 
 local video = {}
 video._framebuffers = {}
-video._drawGamepad = false
+video._toggleView = false
 
+video._switchViews = { "undocked", "docked" }
+video._switchViewIndex = 1
+
+-- Credit: https://shorturl.at/pqCR7
 local function find_max(items, f)
-    local current = nil
     local current_max = -math.huge
 
     for i = 1, #items do
@@ -18,7 +21,6 @@ local function find_max(items, f)
         local v = f(e, i)
         if v and v > current_max then
             current_max = v
-            current = e
         end
     end
     return current_max
@@ -31,14 +33,25 @@ function video.init(console, extra)
     local info = assert:some(data[console], "No screen info was found for the given console")
 
     if console == "3ds" then
+        table.insert(video._framebuffers, framebuffer("left",   { size = info.left                       }))
+        table.insert(video._framebuffers, framebuffer("right",  { size = info.right                      }))
+        table.insert(video._framebuffers, framebuffer("bottom", { size = info.bottom, offset = {40, 240} }))
     elseif console == "switch" then
+        local mode = (extra.docked and "docked" or "undocked")
+        video._toggleView = extra.docked
+
+        table.insert(video._framebuffers, framebuffer("default", { size = info.default[mode], extra = { mode = mode } }))
     elseif console == "wii u" then
-        table.insert(video._framebuffers, framebuffer("tv", info.tv[extra.mode]))
-        table.insert(video._framebuffers, framebuffer("gamepad", info.gamepad, { 0, 0 }))
+        table.insert(video._framebuffers, framebuffer("tv",      { size = info.tv[extra.mode] }))
+        table.insert(video._framebuffers, framebuffer("gamepad", { size = info.gamepad        }))
     end
 
     local window_width = find_max(video._framebuffers, framebuffer.getWidth)
     local window_height = find_max(video._framebuffers, framebuffer.getHeight)
+
+    if console == "3ds" then
+        window_height = window_height * 2
+    end
 
     love.window.updateMode(window_width, window_height, {})
 end
@@ -53,11 +66,18 @@ end
 --- love overrides
 ----
 
+local valid_console_input = {
+    ["3ds"]    = false,
+    ["switch"] = true,
+    ["wii u"]  = true
+}
+
 function video.keypressed(key)
-    if config.get("console") ~= "wii u" then
+    if not valid_console_input[config.get("console")] then
         return
     end
 
+    local console = config.get("console")
     local binding = config.getKeybinding(key)
 
     if not binding then
@@ -66,15 +86,24 @@ function video.keypressed(key)
 
     local is_button, pressed = binding[1], binding[2]
 
-    if is_button and pressed.value == "gamepadview" then
-        video._drawGamepad = not video._drawGamepad
+    if is_button and pressed.value == "special" then
+        video._toggleView = not video._toggleView
+        video._switchViewIndex = video._toggleView and 2 or 1
 
-        for index = 1, #video._framebuffers do
-            video._framebuffers[index]:toggle()
+        local current_framebuffer = video._framebuffers[1]
+
+        if console == "switch" then
+            local mode = video._switchViews[video._switchViewIndex]
+            video._framebuffers[1]:refresh(unpack(data[console].default[mode]))
+        else
+            for index = 1, #video._framebuffers do
+                video._framebuffers[index]:toggle()
+            end
+            current_framebuffer = video._framebuffers[video._switchViewIndex]
         end
 
-        local index = video._drawGamepad and 2 or 1
-        love.window.updateMode(video._framebuffers[index]:getWidth(), video._framebuffers[index]:getHeight(), {})
+        local width, height = current_framebuffer:getWidth(), current_framebuffer:getHeight()
+        love.window.updateMode(width, height, {})
     end
 end
 
@@ -97,6 +126,24 @@ end
 
 function love.graphics.getActiveScreen()
     return active_screen
+end
+
+local originalSetCanvas = love.graphics.setCanvas
+local lastScreenCanvas = nil
+function love.graphics.setCanvas(...)
+    local arg = { ... }
+
+    if #arg == 1 then
+        lastScreenCanvas = arg[1] -- Store the current screens canvas, as to be restored in a later call
+    end
+
+    if #arg == 0 and lastScreenCanvas then
+        -- Restore the last screens canvas
+        originalSetCanvas(lastScreenCanvas)
+    else
+        -- Nothing to restore, just call the original setCanvas with the args provided
+        originalSetCanvas(unpack(arg))
+    end
 end
 
 return video

@@ -72,17 +72,19 @@ function assert:type(a, t, msg, stack_level)
     return a
 end
 
+--assert a value is one of those in a table of options
 function assert:one_of(a, t, msg, stack_level)
-    local pass = false
-    for index = 1, #t do
-        if t[index] == a then
-            pass = true
-            break
-        end
-    end
+	for _, value in ipairs(t) do
+		if value == a then
+			return a
+		end
+	end
 
-    assert:equal(pass, true, msg, stack_level)
-    return a
+	error(("assertion failed: %s not one of %s %s"):format(
+		tostring(a),
+		table.concat(t, ", "),
+		_extra(msg)
+	), 2 + (stack_level or 0))
 end
 
 --assert a value is nil or a certain type.

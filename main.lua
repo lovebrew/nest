@@ -1,4 +1,4 @@
-require("nest"):init({ console = "cafe" })
+require("nest"):init({ console = "switch", docked = true })
 
 function love.load()
     love.graphics.setBackgroundColor(1, 0, 0)

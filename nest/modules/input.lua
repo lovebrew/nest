@@ -10,7 +10,7 @@ local input = {}
 function input.keypressed(key)
     local binding = config.getKeybinding(key)
 
-    if not binding or binding[2].value == "gamepadview" then
+    if not binding or binding[2].value == "special" then
         return
     end
 
@@ -25,7 +25,7 @@ end
 function input.keyreleased(key)
     local binding = config.getKeybinding(key)
 
-    if not binding or binding[2].value == "gamepadview" then
+    if not binding or binding[2].value == "special" then
         return
     end
 

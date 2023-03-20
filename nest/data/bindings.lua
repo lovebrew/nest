@@ -20,5 +20,5 @@ return
     ["2"]      = "axis:righttrigger+",
 
     --special
-    tab = "button:gamepadview"
+    tab = "button:special"
 }
