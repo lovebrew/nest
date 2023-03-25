@@ -72,8 +72,8 @@ function nest.init(args)
 
     love.run = nest._require("runner", video.getFramebuffers())
 
-    local windowTitle = title:format(love._console_name, nest._VERSION)
-    love.window.setTitle(windowTitle)
+    local window_title = title:format(love._console_name, nest._VERSION)
+    love.window.setTitle(window_title)
 end
 
 return nest
