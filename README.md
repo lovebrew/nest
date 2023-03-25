@@ -42,7 +42,7 @@ This would enable 3DS mode.
 
 ## Notes
 
-1. nëst will not automatically handle changes between 3DS and Switch. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
-
+1. nëst will not automatically handle changes between the consoles. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
 2. In Wii U emulation, if you wish to access the gamepad view, press tab. This will swap between the TV and Gamepad!
 3. In Switch emulation, you can press tab to swap between docked and undocked mode.
+4. In 3DS emulation, you can use the scroll wheel to change the 3d depth slider value (0.1 increments)
