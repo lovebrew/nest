@@ -26,35 +26,25 @@ local function find_max(items, f)
     return current_max
 end
 
--- Credit: https://shorturl.at/tyENT
-local function foreach(t, f)
-	for i = 1, #t do
-		local result = f(t[i], i)
-		if result ~= nil then
-			return result
-		end
-	end
-	return t
-end
-
 ---Initializes the video module
 ---@param console string name of the console
 ---@param extra table extra data for the framebuffer information
 function video.init(console, extra)
     local info = assert:some(data[console], "No screen info was found for the given console")
+    local scale = extra.scale
 
     if console == "3ds" then
-        table.insert(video._framebuffers, framebuffer("left",   { size = info.left                       }))
-        table.insert(video._framebuffers, framebuffer("right",  { size = info.right                      }))
-        table.insert(video._framebuffers, framebuffer("bottom", { size = info.bottom, offset = {40, 240} }))
+        table.insert(video._framebuffers, framebuffer("left",   { scale = scale, size = info.left                                         }))
+        table.insert(video._framebuffers, framebuffer("right",  { scale = scale, size = info.right                                        }))
+        table.insert(video._framebuffers, framebuffer("bottom", { scale = scale, size = info.bottom, offset = { 40 * scale, 240 * scale } }))
     elseif console == "switch" then
         local mode = (extra.docked and "docked" or "undocked")
         video._toggleView = extra.docked
 
-        table.insert(video._framebuffers, framebuffer("default", { size = info.default[mode], extra = { mode = mode } }))
+        table.insert(video._framebuffers, framebuffer("default", { scale = scale, size = info.default[mode], extra = { mode = mode } }))
     elseif console == "wii u" then
-        table.insert(video._framebuffers, framebuffer("tv",      { size = info.tv[extra.mode] }))
-        table.insert(video._framebuffers, framebuffer("gamepad", { size = info.gamepad        }))
+        table.insert(video._framebuffers, framebuffer("tv",      { scale = scale, size = info.tv[extra.mode] }))
+        table.insert(video._framebuffers, framebuffer("gamepad", { scale = scale, size = info.gamepad        }))
     end
 
     local window_width = find_max(video._framebuffers, framebuffer.getWidth)
@@ -64,7 +54,7 @@ function video.init(console, extra)
         window_height = window_height * 2
     end
 
-    love.window.updateMode(window_width, window_height, {})
+    love.window.updateMode(window_width * scale, window_height * scale, {})
 end
 
 ---Gets the framebuffers in the video module
@@ -99,8 +89,11 @@ function video.keypressed(key)
 
     if is_button and pressed.value == "special" then
         video._toggleView = not video._toggleView
+
+        -- sync the view index with the toggled view boolean
         video._switchViewIndex = video._toggleView and 2 or 1
 
+        -- default framebuffer
         local current_framebuffer = video._framebuffers[1]
 
         if console == "switch" then
@@ -113,12 +106,21 @@ function video.keypressed(key)
             current_framebuffer = video._framebuffers[video._switchViewIndex]
         end
 
+        -- set the new width and height of the window
         local width, height = current_framebuffer:getWidth(), current_framebuffer:getHeight()
         love.window.updateMode(width, height, {})
     end
 end
 
-local love_events = { "keypressed" }
+function video.wheelmoved(x, y)
+    if y > 0 then
+        love.graphics._setDepth(0.1)
+    elseif y < 0 then
+        love.graphics._setDepth(-0.1)
+    end
+end
+
+local love_events = { "keypressed", "wheelmoved" }
 local registry = {}
 
 -- hook into love events we want
@@ -127,38 +129,6 @@ for _, callback in ipairs(love_events) do
     love[callback] = function(...)
         registry[callback](...)
         video[callback](...)
-    end
-end
-
-----
---- love overrides
-----
-
-local active_screen = nil
-function love.graphics.setActiveScreen(screen)
-    active_screen = screen
-end
-
-function love.graphics.getActiveScreen()
-    return active_screen
-end
-
-local originalSetCanvas = love.graphics.setCanvas
-function love.graphics.setCanvas(...)
-    local length = select("#", ...)
-
-    if length == 1 then
-        foreach(video._framebuffers, function(element, _)
-            element:toggleRenderTo()
-        end)
-
-        originalSetCanvas(...)
-    else
-        originalSetCanvas(...)
-
-        foreach(video._framebuffers, function(element, _)
-            element:toggleRenderTo()
-        end)
     end
 end
 

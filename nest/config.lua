@@ -78,7 +78,7 @@ function config.set(args)
         return false
     end
 
-    config._scale    = clamp(args.scale or 1, 1, 3)
+    config._scale    = clamp(args.scale or 1, 1, 1)
     config._console  = find_match(consoles, function(key, value)
         if args.console == key or args.console == value then
             return true

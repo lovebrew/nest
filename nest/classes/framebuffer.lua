@@ -30,14 +30,14 @@ function framebuffer.new(name, config)
 end
 
 function framebuffer:refresh(width, height)
-    self.canvas = love.graphics.newCanvas(width, height)
+    self.canvas = love.graphics.newCanvas(width * self.scale, height * self.scale)
     self.width, self.height = width, height
 end
 
 ---Renders to the love.Canvas
 ---@param render_func function
 function framebuffer:renderTo(render_func)
-    if self.name == "right" then
+    if self.name == "right" and not love.graphics.get3D() then
         return
     end
 
@@ -48,14 +48,29 @@ function framebuffer:renderTo(render_func)
     self.canvas:renderTo(assert:type(render_func, "function"))
 end
 
+function framebuffer:isActive()
+    return self.shouldRenderTo
+end
+
 ---Draws the love.Canvas
 function framebuffer:draw()
-    if self.hidden then
+    if (self.name == "right" and not love.graphics.get3D()) then
         return
     end
 
-    love.graphics.setColor(1, 1, 1, 1)
+    if self.name == "gamepad" and self.hidden then
+        return
+    end
+
+    local alpha = 1
+    if self.name == "right" then
+        alpha = 0.75
+    end
+
+    love.graphics.setColor(1, 1, 1, alpha)
     love.graphics.draw(self.canvas, self.x_offset, self.y_offset)
+
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 function framebuffer:toggle()

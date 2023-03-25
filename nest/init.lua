@@ -23,13 +23,13 @@ local nest =
        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-   ]]
+   ]],
+
+   init = function()
+   end
 }
 
 if love._console_name then
-    function nest:init()
-    end
-
     return
 end
 
@@ -49,7 +49,7 @@ nest._require = function(name, ...)
     return chunk(unpack(args))
 end
 
-function nest:init(args)
+function nest.init(args)
     local success = config.set(args or {})
 
     if not success then
@@ -64,7 +64,11 @@ function nest:init(args)
     end
 
     local video = nest._require("modules.video")
-    video.init(config.get("console"), { docked = config.get("docked"), mode = config.get("mode") })
+
+    local options = { scale = config.get("scale"), docked = config.get("docked"), mode = config.get("mode") }
+    video.init(config.get("console"), options)
+
+    nest._require("modules.overrides")
 
     love.run = nest._require("runner", video.getFramebuffers())
 
