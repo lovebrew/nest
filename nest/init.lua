@@ -25,12 +25,16 @@ local nest =
        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    ]],
 
-   init = function()
-   end
+    init = function()
+    end,
+
+    setPowerState = function()
+    end
 }
 
+
 if love._console_name then
-    return
+    return nest
 end
 
 -- config flags
@@ -69,11 +73,14 @@ function nest.init(args)
     video.init(config.get("console"), options)
 
     nest._require("modules.overrides")
+    nest._require("modules.filesystem")
 
     love.run = nest._require("runner", video.getFramebuffers())
 
     local window_title = title:format(love._console_name, nest._VERSION)
     love.window.setTitle(window_title)
+
+    return nest
 end
 
 return nest

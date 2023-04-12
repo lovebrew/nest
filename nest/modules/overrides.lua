@@ -3,6 +3,8 @@ local path = (...):gsub("%.modules.+", "")
 local config = require(path .. ".config")
 local video = require(path .. ".modules.video")
 
+local nest = require(path)
+
 -- Credit: https://shorturl.at/tyENT
 local function foreach(t, f)
     for i = 1, #t do
@@ -97,7 +99,53 @@ if config.get("console") == "3ds" then
     end
 end
 
-----
---- drawing scaled stuff (need to check if it's the screen or an actual canvas)
---- print, printf, draw, circle, rectangle, points, line, ellipse, polygon
-----
+local state, percent = "battery", 100
+function love.system.getPowerInfo()
+    local channel_percent = love.thread.getChannel("battery"):pop()
+    if channel_percent then
+        percent = channel_percent
+    end
+    return state, percent
+end
+
+function nest.setPowerState(new_state, new_percent)
+    state, percent = new_state, new_percent or percent
+    love.thread.getChannel("power_state"):push({state, percent})
+end
+
+function nest.plug_in(plugged)
+    if plugged then
+        return nest.setPowerState("charging")
+    end
+    nest.setPowerState("battery")
+end
+
+local thread_code = [[
+local state, percent = ...
+local max_timer = 15
+local timer = max_timer
+require("love.timer")
+
+while true do
+    timer = math.max(timer - 1, 0)
+
+    local stats = love.thread.getChannel("power_state"):pop()
+    if stats then
+        state, percent = unpack(stats)
+    end
+
+    if timer <= 0 then
+        if state == "battery" then
+            percent = math.max(percent - 1, 0)
+        elseif state == "charging" then
+            percent = math.min(percent + 1, 100)
+        end
+        love.thread.getChannel("battery"):push(percent)
+        timer = max_timer
+    end
+    love.timer.sleep(1)
+end
+]]
+
+local thread = love.thread.newThread(thread_code)
+thread:start(state, percent)

@@ -1,4 +1,4 @@
-require("nest").init({ console = "3ds" })
+local nest = require("nest").init({ console = "3ds" })
 
 local rect = { w = 200, h = 120 }
 function love.load()
@@ -19,10 +19,13 @@ function love.draw(screen)
 
     local depth = screen_depth(screen)
     love.graphics.rectangle("fill", x - (depth * 6), y, rect.w, rect.h)
+    print(love.system.getPowerInfo())
 end
 
 function love.gamepadpressed(_, button)
-    print(button)
+    if button == "a" then
+        nest.plug_in()
+    end
 end
 
 function love.gamepadaxis(_, axis, value)
