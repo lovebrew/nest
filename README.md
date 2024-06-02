@@ -11,7 +11,7 @@ Currently nëst supports LÖVE Potion version 2.0.0 and up. Please note that if 
 Simply `require` the library folder and call the init function with the appropriate options-filled table at the top of your `main.lua`, outside of LÖVE functions.
 
 ```lua
-require('path.to.nest'):init(config)
+require('path.to.nest').init(config)
 
 function love.load()
   -- code
@@ -20,22 +20,29 @@ end
 -- mode code
 ```
 
-Available (and supported) options:
+When running on-console, the `init` function will no-op, preventing nëst from operating.
 
-| Name                  | Description                                  | Values        | Required |
-|-----------------------|----------------------------------------------|---------------|:--------:|
-| mode                  | Enable a specific console mode               | "ctr", "hac"  | ✓        |
-| scale                 | Scale the window size                        | 1, 2          | ×        |
-| emulateJoystick       | Enable joystick emulation via keyboard input | false, true   | ×        |
+### Configuration Options
+
+| Name            | Description                                         | Values                   | Required | Default |
+| --------------- | --------------------------------------------------- | ------------------------ | :------: | :-----: |
+| console         | Enable a specific console mode                      | "3ds", "switch", "wii u" |    x     |   nil   |
+| scale           | Scale the window size                               | 1, 2, or 3               |    ×     |    1    |
+| emulateJoystick | Enable joystick emulation via keyboard input        | false, true              |    ×     |  true   |
+| docked          | Set whether the Nintendo Switch emulation is docked | false, true              |    ×     |  false  |
+| mode            | Set the TV mode for the Wii U                       | "480p", "720p", "1080p"  |    ×     | "720p"  |
 
 The configuration is a table with these options. For example:
 
 ```lua
-require("nest"):init({mode = "ctr"})
+require("nest").init({console = "3ds"})
 ```
 
 This would enable 3DS mode.
 
 ## Notes
 
-nëst will not automatically handle changes between 3DS and Switch. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
+1. nëst will not automatically handle changes between the consoles. You as the developer are responsible to make code work on whichever platforms you choose. Usually just one of the consoles and PC.
+2. In Wii U emulation, if you wish to access the gamepad view, press tab. This will swap between the TV and Gamepad!
+3. In Switch emulation, you can press tab to swap between docked and undocked mode.
+4. In 3DS emulation, you can use the scroll wheel to change the 3d depth slider value (0.1 increments)

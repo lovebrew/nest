@@ -1,12 +1,12 @@
-local PATH = (...):gsub('%.init$', '')
+local path = (...):gsub('%.init$', '')
 
 local nest =
 {
-    _VERSION     = "0.3.1",
+    _VERSION     = "0.4.0",
     _DESCRIPTION = "LÖVE Potion Compatabiility Layer library",
     _LICENSE     = [[
        MIT LICENSE
-       Copyright (c) 2020-2021 Jeremy S. Postelnek / TurtleP
+       Copyright (c) 2020-2023 TurtleP
        Permission is hereby granted, free of charge, to any person obtaining a
        copy of this software and associated documentation files (the
        "Software"), to deal in the Software without restriction, including
@@ -23,39 +23,64 @@ local nest =
        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-   ]]
+   ]],
+
+    init = function()
+    end,
+
+    setPowerState = function()
+    end
 }
 
-if love._console_name then
-    function nest:init()
-        -- stubbed
-    end
 
-    return
+if love._console_name then
+    return nest
 end
 
 -- config flags
-local config = require(PATH .. ".config")
+local config = require(path .. ".config")
 local title = "Nintendo %s (nëst %s)"
 
 nest._require = function(name, ...)
-    name = string.format("%s.%s", PATH, name)
+    name = string.format("%s.%s", path, name)
     local chunk = require(name)
+
+    if type(chunk) ~= "function" then
+        return chunk
+    end
 
     local args = { ... }
     return chunk(unpack(args))
 end
 
-function nest:init(...)
-    config.set(...)
+function nest.init(args)
+    local success = config.set(args or {})
 
-    love._console_name = (config.isSetTo("mode", "ctr")) and "3DS" or "Switch"
+    if not success then
+        return
+    end
 
-    local screens = require(PATH .. ".modules")
-    love.run = nest._require("runner", screens)
+    config.parseBindingInfo()
+    love._console_name = config.getName()
 
-    local windowTitle = title:format(love._console_name, nest._VERSION)
-    love.window.setTitle(windowTitle)
+    if config.get("emulateJoystick") then
+        nest._require("modules.input")
+    end
+
+    local video = nest._require("modules.video")
+
+    local options = { scale = config.get("scale"), docked = config.get("docked"), mode = config.get("mode") }
+    video.init(config.get("console"), options)
+
+    nest._require("modules.overrides")
+    nest._require("modules.filesystem")
+
+    love.run = nest._require("runner", video.getFramebuffers())
+
+    local window_title = title:format(love._console_name, nest._VERSION)
+    love.window.setTitle(window_title)
+
+    return nest
 end
 
 return nest
