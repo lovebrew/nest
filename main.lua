@@ -1,4 +1,4 @@
-local nest = require("nest").init({ console = "3ds" })
+local nest = require("nest").init({ console = "3ds", scale = 2 })
 
 local rect = { w = 200, h = 120 }
 function love.load()

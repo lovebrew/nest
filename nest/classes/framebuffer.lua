@@ -68,7 +68,7 @@ function framebuffer:draw()
     end
 
     love.graphics.setColor(1, 1, 1, alpha)
-    love.graphics.draw(self.canvas, self.x_offset, self.y_offset)
+    love.graphics.draw(self.canvas, self.x_offset, self.y_offset, 0, self.scale, self.scale)
 
     love.graphics.setColor(1, 1, 1, 1)
 end
