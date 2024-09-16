@@ -33,8 +33,6 @@ return function(windows)
             end
 
             if love.graphics then
-                love.graphics.origin()
-
                 for _, screen in ipairs(windows) do
                     love.graphics.setActiveScreen(screen:getName())
 
@@ -46,6 +44,7 @@ return function(windows)
                         end
                     end)
 
+                    love.graphics.origin()
                     screen:draw()
                 end
 
