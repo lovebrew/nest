@@ -109,6 +109,10 @@ function video.keypressed(key)
         -- set the new width and height of the window
         local width, height = current_framebuffer:getWidth(), current_framebuffer:getHeight()
         love.window.updateMode(width, height, {})
+
+        if love.resize then
+            love.resize(width, height)
+        end
     end
 end
 
