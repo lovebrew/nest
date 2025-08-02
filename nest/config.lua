@@ -25,7 +25,7 @@ config._mode = config._defaultMode
 local consoles = {
     ["3ds"]    = "ctr",
     ["switch"] = "hac",
-    ["wii u"]  = "cafe",
+    ["wiiu"]   = "cafe",
 }
 
 local wiiu_modes = {
@@ -74,27 +74,29 @@ end
 ---@param args { scale?: integer, console: string, emulateJoystick: boolean, docked?: boolean, mode?: string }
 function config.set(args)
     if nil_or_whitespace(args.console) then
+        print("!")
         config._loaded = false
         return false
     end
 
-    config._scale    = clamp(args.scale or 1, 1, 3)
-    config._console  = find_match(consoles, function(key, value)
+    config._scale   = clamp(args.scale or 1, 1, 3)
+    config._console = find_match(consoles, function(key, value)
         if args.console == key or args.console == value then
             return true
         end
     end)
+    print(config._console)
 
     config._emulateJoystick = args.emulateJoystick or true
 
     if config._console == "switch" then
         config._docked = args.docked or config._defaultDocked
-    elseif config._console == "wii u" then
+    elseif config._console == "wiiu" then
         config._mode = find_match(wiiu_modes, function(_, value)
-                if args.mode == value then
-                    return true
-                end
-            end) or config._defaultMode
+            if args.mode == value then
+                return true
+            end
+        end) or config._defaultMode
     end
 
     assert:some(config._console, "Console was not specified.")

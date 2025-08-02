@@ -26,7 +26,7 @@ When running on-console, the `init` function will no-op, preventing nëst from o
 
 | Name            | Description                                         | Values                   | Required | Default |
 | --------------- | --------------------------------------------------- | ------------------------ | :------: | :-----: |
-| console         | Enable a specific console mode                      | "3ds", "switch", "wii u" |    x     |   nil   |
+| console         | Enable a specific console mode                      | "3ds", "switch", "wiiu" |    x     |   nil   |
 | scale           | Scale the window size                               | 1, 2, or 3               |    ×     |    1    |
 | emulateJoystick | Enable joystick emulation via keyboard input        | false, true              |    ×     |  true   |
 | docked          | Set whether the Nintendo Switch emulation is docked | false, true              |    ×     |  false  |

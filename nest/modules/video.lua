@@ -34,17 +34,21 @@ function video.init(console, extra)
     local scale = extra.scale
 
     if console == "3ds" then
-        table.insert(video._framebuffers, framebuffer("left",   { scale = scale, size = info.left                                         }))
-        table.insert(video._framebuffers, framebuffer("right",  { scale = scale, size = info.right                                        }))
-        table.insert(video._framebuffers, framebuffer("bottom", { scale = scale, size = info.bottom, offset = { 40 * scale, 240 * scale } }))
+        table.insert(video._framebuffers,
+            framebuffer("left", { scale = scale, size = info.left }))
+        table.insert(video._framebuffers,
+            framebuffer("right", { scale = scale, size = info.right }))
+        table.insert(video._framebuffers,
+            framebuffer("bottom", { scale = scale, size = info.bottom, offset = { 40 * scale, 240 * scale } }))
     elseif console == "switch" then
         local mode = (extra.docked and "docked" or "undocked")
         video._toggleView = extra.docked
 
-        table.insert(video._framebuffers, framebuffer("default", { scale = scale, size = info.default[mode], extra = { mode = mode } }))
-    elseif console == "wii u" then
-        table.insert(video._framebuffers, framebuffer("tv",      { scale = scale, size = info.tv[extra.mode] }))
-        table.insert(video._framebuffers, framebuffer("gamepad", { scale = scale, size = info.gamepad        }))
+        table.insert(video._framebuffers,
+            framebuffer("default", { scale = scale, size = info.default[mode], extra = { mode = mode } }))
+    elseif console == "wiiu" then
+        table.insert(video._framebuffers, framebuffer("tv", { scale = scale, size = info.tv[extra.mode] }))
+        table.insert(video._framebuffers, framebuffer("gamepad", { scale = scale, size = info.gamepad }))
     end
 
     local window_width = find_max(video._framebuffers, framebuffer.getWidth)
@@ -70,7 +74,7 @@ end
 local valid_console_input = {
     ["3ds"]    = false,
     ["switch"] = true,
-    ["wii u"]  = true
+    ["wiiu"]   = true
 }
 
 function video.keypressed(key)
@@ -125,7 +129,7 @@ local registry = {}
 
 -- hook into love events we want
 for _, callback in ipairs(love_events) do
-    registry[callback] = love[callback] or function () end
+    registry[callback] = love[callback] or function() end
     love[callback] = function(...)
         registry[callback](...)
         video[callback](...)
