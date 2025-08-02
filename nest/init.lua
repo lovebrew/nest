@@ -33,7 +33,7 @@ local nest =
 }
 
 
-if love._console_name then
+if love._console then
     return nest
 end
 
@@ -61,7 +61,7 @@ function nest.init(args)
     end
 
     config.parseBindingInfo()
-    love._console_name = config.getName()
+    love._console = config.getName()
 
     if config.get("emulateJoystick") then
         nest._require("modules.input")
@@ -77,7 +77,7 @@ function nest.init(args)
 
     love.run = nest._require("runner", video.getFramebuffers())
 
-    local window_title = title:format(love._console_name, nest._VERSION)
+    local window_title = title:format(love._console, nest._VERSION)
     love.window.setTitle(window_title)
 
     return nest
