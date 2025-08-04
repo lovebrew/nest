@@ -44,6 +44,16 @@ local function find_match(t, f)
     return nil
 end
 
+-- Credit: Ice Baron
+local function find_match_value(t, f)
+    for key, value in pairs(t) do
+        if f(key, value) then
+            return value
+        end
+    end
+    return nil
+end
+
 -- Credit: https://shorturl.at/csvT6
 local function round(v)
     if v < 0 then
@@ -92,7 +102,7 @@ function config.set(args)
     if config._console == "switch" then
         config._docked = args.docked or config._defaultDocked
     elseif config._console == "wiiu" then
-        config._mode = find_match(wiiu_modes, function(_, value)
+        config._mode = find_match_value(wiiu_modes, function(_, value)
             if args.mode == value then
                 return true
             end
